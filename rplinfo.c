@@ -4,8 +4,8 @@
 #include "contiki.h"
 #include "contiki-net.h"
 
-#include "net/uip.h"
-#include "net/uip-ds6.h"
+#include "net/ip/uip.h"
+#include "net/ipv6/uip-ds6.h"
 #include "net/rpl/rpl.h"
 
 #include "erbium.h"
@@ -27,7 +27,7 @@
 
 /* debug */
 #define DEBUG DEBUG_FULL
-#include "net/uip-debug.h"
+#include "net/ip/uip-debug.h"
 
 uint16_t 
 ipaddr_add(const uip_ipaddr_t *addr, char *buf)
@@ -87,7 +87,7 @@ routes_handler(void* request, void* response, uint8_t *buffer, uint16_t preferre
     index = (uint8_t)atoi(pstr);
     
     if (index >= count ) {
-      strpos = snprintf(buffer, preferred_size, "{}");
+      strpos = snprintf((char *)buffer, preferred_size, "{}");
     } else { 
       /* seek to the route entry and return it */
       i = 0;
@@ -96,7 +96,7 @@ routes_handler(void* request, void* response, uint8_t *buffer, uint16_t preferre
 	  break;
 	}
       }
-      strpos = create_route_msg(buffer, r);
+      strpos = create_route_msg((char *)buffer, r);
     }
   
     REST.set_header_content_type(response, APPLICATION_JSON);
@@ -147,7 +147,6 @@ void
 parents_handler(void* request, void* response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset)
 {
   int32_t strpos = 0;
-  uip_ds6_route_t *r;
   volatile uint8_t i;
   rpl_dag_t *dag;
   rpl_parent_t *parent;
@@ -172,7 +171,7 @@ parents_handler(void* request, void* response, uint8_t *buffer, uint16_t preferr
 			index = (uint8_t)atoi(pstr);
 
 			if (index >= count) {
-				strpos = snprintf(buffer, preferred_size, "{}");
+				strpos = snprintf((char *)buffer, preferred_size, "{}");
 			} else { 
 				/* seek to the route entry and return it */
 				i = 0;
@@ -183,9 +182,9 @@ parents_handler(void* request, void* response, uint8_t *buffer, uint16_t preferr
 				}
 				
 				if (parent == dag->preferred_parent) { 
-					strpos = create_parent_msg(buffer, parent, 1);
+					strpos = create_parent_msg((char *)buffer, parent, 1);
 				} else {
-					strpos = create_parent_msg(buffer, parent, 0);
+					strpos = create_parent_msg((char *)buffer, parent, 0);
 				}
 			}	
 
