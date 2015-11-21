@@ -164,7 +164,9 @@ parents_handler(void* request, void* response, uint8_t *buffer, uint16_t preferr
 
 		/* count the number of routes and return the total */
 		count = 0;
-		for (parent = dag->preferred_parent, i = 0; parent != NULL; parent = parent->next) {
+		parent = nbr_table_head(rpl_parents);
+		while(parent != NULL) {
+			parent = nbr_table_next(rpl_parents, parent);
 			count++;
 		}
 
@@ -177,10 +179,13 @@ parents_handler(void* request, void* response, uint8_t *buffer, uint16_t preferr
 			} else {
 				/* seek to the route entry and return it */
 				i = 0;
-				for (parent = dag->preferred_parent, i = 0; parent != NULL; parent = parent->next, i++) {
+				parent = nbr_table_head(rpl_parents);
+				while(parent != NULL) {
 					if (i == index) {
 						break;
 					}
+					parent = nbr_table_next(rpl_parents, parent);
+					i++;
 				}
 
 				if (parent == dag->preferred_parent) {
