@@ -111,7 +111,6 @@ routes_handler(void* request, void* response, uint8_t *buffer, uint16_t preferre
 uint16_t create_parent_msg(char *buf, rpl_parent_t *parent, uint8_t preferred)
 {
 	uint8_t n = 0;
-	uip_ds6_nbr_t *nbr;
 
 	uip_ipaddr_t * addr = rpl_get_parent_ipaddr(parent);
 
@@ -126,8 +125,7 @@ uint16_t create_parent_msg(char *buf, rpl_parent_t *parent, uint8_t preferred)
 	} else {
 		n += sprintf(&(buf[n]), "false,");
 	}
-	nbr = rpl_get_nbr(parent);
-	n += sprintf(&(buf[n]), "\"etx\":%d}", nbr->link_metric);
+	n += sprintf(&(buf[n]), "\"etx\":%d}", rpl_get_parent_link_metric(parent));
 
 	buf[n] = 0;
 	PRINTF("buf: %s\n", buf);
